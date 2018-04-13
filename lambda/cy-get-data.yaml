@@ -2,8 +2,9 @@ Resources:
   CyGetData:
     Type: 'AWS::Lambda::Function'
     Properties:
+      FunctionName: cf-cy-get-data
       Handler: cy-get-data.handler
-      Role: 'arn:aws:iam::675207449389:role/cy-get-scan-item-role'
+      Role: !ImportValue CfCyGetDataRoleArn
       Code:
         S3Bucket: mgabeeireland
         S3Key: cy-get-data.zip

@@ -1,0 +1,44 @@
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+        RoleName: CfCyGetDataRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - lambda.amazonaws.com
+            Action:
+            - sts:AssumeRole
+        Path: "/"
+        Policies:
+        - PolicyName: CfAWSLambdaBasicExecutionRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - logs:CreateLogGroup
+              Resource: arn:aws:logs:eu-west-1:675207449389:*
+            - Effect: Allow
+              Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              Resource: arn:aws:logs:eu-west-1:675207449389:log-group:/aws/lambda/cy-store-date:*
+        - PolicyName: cf-dynamodb-cy-get-scan-item-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - dynamodb:GetItem
+              - dynamodb:Scan
+              Resource: arn:aws:dynamodb:eu-west-1:675207449389:table/compare-yourself
+Outputs:
+  CfCyGetDataRole:
+    Description: CfCyGetDataRole role to get scan DynamoDB data
+    Value: !GetAtt LambdaRole.Arn
+    Export:
+      Name: CfCyGetDataRoleArn

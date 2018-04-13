@@ -1,0 +1,49 @@
+Resources:
+  CyGetData:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: cf-cy-get-data
+      Handler: cy-get-data.handler
+      Role: !GetAtt LambdaRole.Arn
+      Code:
+        S3Bucket: mgabeeireland
+        S3Key: cy-get-data.zip
+      Runtime: nodejs6.10
+      Timeout: '25'
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+        RoleName: CfCyGetDataRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - lambda.amazonaws.com
+            Action:
+            - sts:AssumeRole
+        Path: "/"
+        Policies:
+        - PolicyName: CfAWSLambdaBasicExecutionRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - logs:CreateLogGroup
+              Resource: arn:aws:logs:eu-west-1:675207449389:*
+            - Effect: Allow
+              Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              Resource: arn:aws:logs:eu-west-1:675207449389:log-group:/aws/lambda/cy-store-date:*
+        - PolicyName: cf-dynamodb-cy-get-scan-item-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - dynamodb:GetItem
+              - dynamodb:Scan
+              Resource: arn:aws:dynamodb:eu-west-1:675207449389:table/compare-yourself
